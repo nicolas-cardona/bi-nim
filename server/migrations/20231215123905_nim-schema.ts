@@ -11,10 +11,10 @@ export async function up(knex: Knex): Promise<void> {
     END;
     $$ LANGUAGE plpgsql;
   `);
-  await knex.schema.createSchemaIfNotExists('nim-game');
+  await knex.schema.createSchemaIfNotExists('nim');
 }
 
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.schema.dropSchemaIfExists('nim-game');
+  await knex.schema.dropSchemaIfExists('nim');
 }
