@@ -8,9 +8,10 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     CREATE TABLE IF NOT EXISTS nim.turn(
       turn_id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      game_id UUID REFERENCES nim.match(match_id) NOT NULL,
-      player_in_turn player NOT NULL,
-      selected_integer game_integers NOT NULL,
+      match_id UUID REFERENCES nim.match(match_id) NOT NULL,
+      integer_1 INTEGER DEFAULT 0,
+      integer_2 INTEGER DEFAULT 0,
+      integer_3 INTEGER DEFAULT 0,
       turn_order INTEGER NOT NULL,
       created_at TIMESTAMPTZ(3) DEFAULT NOW(),
       updated_at TIMESTAMPTZ(3) DEFAULT NOW(),
@@ -28,5 +29,8 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
+  await knex.schema.raw(`
+    DROP TYPE IF EXISTS game_integers CASCADE;
+  `);
   await knex.schema.withSchema('nim').dropTableIfExists('turn');
 }
