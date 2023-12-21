@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsUUID, IsDateString, IsInt } from 'class-validator';
+import { IsNotEmpty, IsUUID, IsDateString, IsInt, Min } from 'class-validator';
 import { UUID } from 'crypto';
 export class Turn {
   @IsNotEmpty()
@@ -11,14 +11,17 @@ export class Turn {
 
   @IsNotEmpty()
   @IsInt()
+  @Min(0)
   integer_1: number;
 
   @IsNotEmpty()
   @IsInt()
+  @Min(0)
   integer_2: number;
 
   @IsNotEmpty()
   @IsInt()
+  @Min(0)
   integer_3: number;
 
   @IsNotEmpty()
@@ -35,5 +38,4 @@ export class Turn {
 
   @IsDateString()
   deleted_at: Date;
-
 }
