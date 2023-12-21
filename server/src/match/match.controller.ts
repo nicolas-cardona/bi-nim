@@ -4,14 +4,15 @@ import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
 import { UUID } from 'crypto';
 
+const supremum = 20;
+
 @Controller('match')
 export class MatchController {
   constructor(private readonly matchService: MatchService) {}
 
   @Post('new')
   async newMatch(@Body() matchOptionsDto: MatchOptionsDto): Promise<Match> {
-    const match = this.matchService.createMatch(matchOptionsDto, 20);
-    return await this.matchService.add(match);
+    return await this.matchService.add(matchOptionsDto, supremum);
   }
 
   @Get(':matchId')
