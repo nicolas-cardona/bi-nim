@@ -8,9 +8,6 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.raw(`
     CREATE TABLE IF NOT EXISTS nim.match(
       match_id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      integer_1 INTEGER NOT NULL,
-      integer_2 INTEGER NOT NULL,
-      integer_3 INTEGER DEFAULT 0,
       first_player player NOT NULL,
       winner player,
       match_finished BOOLEAN DEFAULT false,
