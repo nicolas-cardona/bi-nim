@@ -12,7 +12,7 @@ export async function up(knex: Knex): Promise<void> {
       integer_1 INTEGER DEFAULT 0,
       integer_2 INTEGER DEFAULT 0,
       integer_3 INTEGER DEFAULT 0,
-      turn_order INTEGER NOT NULL,
+      turn_order INTEGER DEFAULT 0,
       created_at TIMESTAMPTZ(3) DEFAULT NOW(),
       updated_at TIMESTAMPTZ(3) DEFAULT NOW(),
       deleted_at TIMESTAMPTZ(3)
