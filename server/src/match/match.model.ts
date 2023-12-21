@@ -5,9 +5,6 @@ import { Match } from './entities/match.entity';
 
 const selectKey = [
   'match_id',
-  'integer_1',
-  'integer_2',
-  'integer_3',
   'first_player',
   'winner',
   'match_finished',
