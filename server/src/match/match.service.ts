@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { MatchModel } from './match.model';
 import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
 import { Player } from './enums/player.enums';
 import { Turn } from 'src/turn/entities/turn.entity';
 import { TurnService } from 'src/turn/turn.service';
+import { error } from 'console';
 
 @Injectable()
 export class MatchService {
@@ -33,12 +34,17 @@ export class MatchService {
     return await this.matchModel.findOne(match);
   }
 
-  private getRandomInt(supremum: number) {
-    return Math.floor(Math.random() * supremum);
+  // Function that generates random integers in the interval [minimum, supremum)
+  private getRandomInt(minimum: number, supremum: number) {
+    if (minimum < supremum) {
+      return Math.floor(Math.random() * (supremum - minimum) + minimum);
+    } else {
+      throw new Error('supremumm must be greater than minimum');
+    }
   }
 
   private randomPlayer(): Player {
-    const randomInt = this.getRandomInt(2);
+    const randomInt = this.getRandomInt(0, 2);
     if (randomInt === 0) {
       return Player.COMPUTER;
     } else {
@@ -56,7 +62,7 @@ export class MatchService {
     };
     const { piles } = matchOptionsDto;
     for (let i = 0; i < piles; i++) {
-      turn[`integer_${i + 1}`] = this.getRandomInt(supremum);
+      turn[`integer_${i + 1}`] = this.getRandomInt(1, supremum);
     }
     return await this.turnService.add(turn);
   }
