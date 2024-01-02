@@ -1,11 +1,10 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { MatchModel } from './match.model';
 import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
 import { Player } from './enums/player.enums';
 import { Turn } from 'src/turn/entities/turn.entity';
 import { TurnService } from 'src/turn/turn.service';
-import { error } from 'console';
 
 @Injectable()
 export class MatchService {
@@ -52,7 +51,7 @@ export class MatchService {
     }
   }
 
-  public async setupInitialTurn(
+  private async setupInitialTurn(
     match: Partial<Match>,
     matchOptionsDto: MatchOptionsDto,
     supremum: number,
