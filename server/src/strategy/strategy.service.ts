@@ -3,6 +3,10 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class StrategyService {
 
+  // Function that returns a list with two numbers. The first one is
+  // a number contained in the array of the entry and the second one
+  // is the value that should replace the first one to gurantee the
+  // victory. If this is not possible, it returns null.
   private selectionWithStrategy(array: number[]): number[] {
     const arraySorted = array.sort((a: number, b: number) => a - b);
     let answer = null;
@@ -21,6 +25,9 @@ export class StrategyService {
     return answer;
   }
 
+  // Function that returns a list with two numbers. The first one is
+  // a number contained in the array of the entry and the second one
+  // is a randoml value that can replace the first one.
   private selectionRandom(array: number[]): number[] {
     const arraySorted = array.sort((a: number, b: number) => a - b);
     arraySorted[0] = 0;
