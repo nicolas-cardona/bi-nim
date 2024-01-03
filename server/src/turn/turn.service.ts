@@ -115,7 +115,7 @@ export class TurnService {
     }
   }
 
-  public async userTurnVerification(lastTurnPosted: Turn): Promise<Player> {
+  public async nextPlayer(lastTurnPosted: Turn): Promise<Player> {
     const { first_player } = await this.matchService.findOne({
       match_id: lastTurnPosted.match_id,
     });
