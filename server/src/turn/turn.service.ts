@@ -1,16 +1,24 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { TurnModel } from './turn.model';
 import { Turn } from './entities/turn.entity';
 import { TurnPlayed } from './dto/turn-played.dto';
 import { StrategyService } from 'src/strategy/strategy.service';
 import { StrategySelected } from './dto/strategy-selected.dto';
 import { ComputerStrategy } from './enums/computer-strategy.enums';
+import { MatchService } from 'src/match/match.service';
 
 @Injectable()
 export class TurnService {
   constructor(
     private readonly turnModel: TurnModel,
     private readonly strategyService: StrategyService,
+    @Inject(forwardRef(() => MatchService))
+    private readonly matchService: MatchService,
   ) {}
 
   public async find(turn: Partial<Turn>): Promise<Turn[]> {
@@ -47,7 +55,9 @@ export class TurnService {
     }
 
     if (this.lastTurnVerification(newTurn)) {
-      
+      await this.matchService.endGame({
+        match_id: newTurn.match_id,
+      });
     }
     return newTurn;
   }
