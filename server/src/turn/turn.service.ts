@@ -129,4 +129,15 @@ export class TurnService {
       return iterator.next().value;
     }
   }
+
+  public nextPlayerVerification(
+    currentPlayer: Player,
+    expectedPlayer: Player,
+  ): boolean {
+    if (currentPlayer !== expectedPlayer) {
+      throw new BadRequestException(`next player should be ${expectedPlayer}`);
+    } else {
+      return true;
+    }
+  }
 }
