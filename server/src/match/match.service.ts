@@ -58,4 +58,15 @@ export class MatchService {
     }
     return await this.turnService.add(turn);
   }
+
+  public async endGame(match: Partial<Match>): Promise<Match> {
+    return await this.matchModel.update(
+      {
+        match_id: match.match_id,
+      },
+      {
+        match_finished: true,
+      },
+    );
+  }
 }
