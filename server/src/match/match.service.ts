@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { MatchModel } from './match.model';
 import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
@@ -11,6 +11,7 @@ import { StrategyService } from 'src/strategy/strategy.service';
 export class MatchService {
   constructor(
     private readonly matchModel: MatchModel,
+    @Inject(forwardRef(() => TurnService))
     private readonly turnService: TurnService,
     private readonly strategyService: StrategyService,
   ) {}
