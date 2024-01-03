@@ -13,6 +13,7 @@ export class TurnController {
     private readonly matchService: MatchService,
   ) {}
 
+  // TODO verify if USER is the correct next player
   @Post(':matchId/user')
   async newUserMatch(
     @Param('matchId') matchId: UUID,
@@ -24,10 +25,14 @@ export class TurnController {
     const lastTurnPosted = await this.turnService.findLastOne({
       match_id: matchId,
     });
+    const nextPlayer =
+      await this.turnService.userTurnVerification(lastTurnPosted);
+    console.log(nextPlayer);
     const turn = await this.turnService.createTurn(turnPlayed, lastTurnPosted);
     return await this.turnService.add(turn);
   }
 
+  // TODO verify if COMPUTER is the correct next player
   @Post(':matchId/computer')
   async newComputerMatch(
     @Param('matchId') matchId: UUID,
@@ -39,6 +44,9 @@ export class TurnController {
     const lastTurnPosted = await this.turnService.findLastOne({
       match_id: matchId,
     });
+    const nextPlayer =
+      await this.turnService.userTurnVerification(lastTurnPosted);
+    console.log(nextPlayer);
     const turnPlayed = await this.turnService.createComputerTurnPlayed(
       lastTurnPosted,
       strategySelected,
