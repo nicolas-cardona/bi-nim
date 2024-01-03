@@ -32,4 +32,16 @@ export class MatchModel {
       .returning(selectKey);
     return matchAdded[0];
   }
+
+  public async update(
+    where: Partial<Match>,
+    update: Partial<Match>,
+  ): Promise<Match> {
+    const matchUpdated = await this.database('nim.match')
+      .where(where)
+      .whereNull('deleted_at')
+      .update(update)
+      .returning(selectKey);
+    return matchUpdated === undefined ? null : matchUpdated[0];
+  }
 }
