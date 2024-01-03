@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { TurnModel } from './turn.model';
 import { Turn } from './entities/turn.entity';
 import { TurnPlayed } from './dto/turn-played.dto';
 import { StrategyService } from 'src/strategy/strategy.service';
+import { StrategySelected } from './dto/strategy-selected.dto';
+import { ComputerStrategy } from './enums/computer-strategy.enums';
 
 @Injectable()
 export class TurnService {
@@ -23,42 +25,72 @@ export class TurnService {
     return await this.turnModel.add(turn);
   }
 
-  // TODO: delete match_id from turnPlayed
-  // change dto turnPlayed: pileNumber y value instead of pile_1, etc
   public async createTurn(
     turnPlayed: TurnPlayed,
     lastTurnPosted: Turn,
   ): Promise<Partial<Turn>> {
     const newTurn = {
-      match_id: turnPlayed.match_id,
+      match_id: lastTurnPosted.match_id,
     };
     newTurn['turn_order'] = lastTurnPosted.turn_order + 1;
     for (let i = 1; i < 4; i++) {
-      newTurn[`integer_${i}`] =
-        lastTurnPosted[`integer_${i}`] - (turnPlayed[`pile_${i}`] || 0);
+      if (i === turnPlayed.pile) {
+        this.valuesVerification(
+          lastTurnPosted[`integer_${i}`],
+          turnPlayed.value,
+        );
+        newTurn[`integer_${i}`] =
+          lastTurnPosted[`integer_${i}`] - turnPlayed.value;
+      } else {
+        newTurn[`integer_${i}`] = lastTurnPosted[`integer_${i}`];
+      }
     }
     return newTurn;
   }
 
   public async createComputerTurnPlayed(
     lastTurnPosted: Turn,
+    strategySelected: StrategySelected,
   ): Promise<TurnPlayed> {
     const turnPlayed = {
-      match_id: lastTurnPosted.match_id,
+      pile: null,
+      value: null,
     };
-
-    const array = [
+    const integersArray = [
       lastTurnPosted.integer_1,
       lastTurnPosted.integer_2,
       lastTurnPosted.integer_3,
     ];
 
-    const selection = this.strategyService.selectionWithStrategy(array);
-    if (selection) {
-      const comparing = (integer: number) => integer === selection[0];
-      const index = array.findIndex(comparing);
-      turnPlayed[`pile_${index}`] = selection[1];
+    let selection = null;
+    if (strategySelected.strategy === ComputerStrategy.WINNING) {
+      selection = this.strategyService.selectionWinningStrategy(integersArray);
     }
+
+    if (
+      selection === null ||
+      strategySelected.strategy === ComputerStrategy.RANDOM
+    ) {
+      selection = this.strategyService.selectionRandomStrategy(integersArray);
+    }
+
+    const comparing = (integer: number) => integer === selection[0];
+    turnPlayed.pile = integersArray.findIndex(comparing) + 1;
+    turnPlayed.value = selection[1];
+
     return turnPlayed;
+  }
+
+  private valuesVerification(
+    currentIntegerSelectedPile: number,
+    value: number,
+  ): boolean {
+    if (currentIntegerSelectedPile < value) {
+      throw new BadRequestException(
+        'value must be lesser or equal than the integer corresponding to the pile number',
+      );
+    } else {
+      return true;
+    }
   }
 }
