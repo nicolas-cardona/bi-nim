@@ -74,12 +74,17 @@ export class MatchService {
   }
 
   public async endGame(match: Partial<Match>): Promise<Match> {
+    const lastTurnPosted = await this.turnService.findLastOne({
+      match_id: match.match_id,
+    });
+    const winner = await this.turnService.nextPlayer(lastTurnPosted);
     return await this.matchModel.update(
       {
         match_id: match.match_id,
       },
       {
         match_finished: true,
+        winner: winner,
       },
     );
   }
