@@ -1,28 +1,13 @@
-import {
-  IsNotEmpty,
-  IsUUID,
-  IsInt,
-  IsOptional,
-  IsPositive,
-} from 'class-validator';
-import { UUID } from 'crypto';
+import { IsInt, IsPositive, Min, Max } from 'class-validator';
 export class TurnPlayed {
-  @IsNotEmpty()
-  @IsUUID()
-  match_id: UUID;
+  @IsInt()
+  @IsPositive()
+  @Min(1)
+  @Max(3)
+  pile: number;
 
   @IsInt()
   @IsPositive()
-  @IsOptional()
-  pile_1: number;
-
-  @IsInt()
-  @IsPositive()
-  @IsOptional()
-  pile_2: number;
-
-  @IsInt()
-  @IsPositive()
-  @IsOptional()
-  pile_3: number;
+  @Min(1)
+  value: number;
 }
