@@ -45,6 +45,10 @@ export class TurnService {
         newTurn[`integer_${i}`] = lastTurnPosted[`integer_${i}`];
       }
     }
+
+    if (this.lastTurnVerification(newTurn)) {
+      
+    }
     return newTurn;
   }
 
@@ -90,6 +94,12 @@ export class TurnService {
         'value must be lesser or equal than the integer corresponding to the pile number',
       );
     } else {
+      return true;
+    }
+  }
+
+  private lastTurnVerification(turn: Partial<Turn>): boolean {
+    if (turn.integer_1 === 0 && turn.integer_2 === 0 && turn.integer_3 === 0) {
       return true;
     }
   }

@@ -128,7 +128,7 @@ export class StrategyService {
 
   // Function that generates a random integer in the interval [minimum, supremum)
   // If minimum = supremum, it returns this value
-  private getRandomInt(minimum: number, supremum: number) {
+  public getRandomInt(minimum: number, supremum: number) {
     if (minimum <= supremum) {
       return Math.floor(Math.random() * (supremum - minimum) + minimum);
     } else {

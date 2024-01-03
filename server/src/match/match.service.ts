@@ -5,12 +5,14 @@ import { MatchOptionsDto } from './dto/match-options.dto';
 import { Player } from './enums/player.enums';
 import { Turn } from 'src/turn/entities/turn.entity';
 import { TurnService } from 'src/turn/turn.service';
+import { StrategyService } from 'src/strategy/strategy.service';
 
 @Injectable()
 export class MatchService {
   constructor(
     private readonly matchModel: MatchModel,
     private readonly turnService: TurnService,
+    private readonly strategyService: StrategyService,
   ) {}
 
   public async findOne(match: Partial<Match>): Promise<Match> {
@@ -33,17 +35,8 @@ export class MatchService {
     return await this.matchModel.findOne(match);
   }
 
-  // Function that generates random integers in the interval [minimum, supremum)
-  private getRandomInt(minimum: number, supremum: number) {
-    if (minimum < supremum) {
-      return Math.floor(Math.random() * (supremum - minimum) + minimum);
-    } else {
-      throw new Error('supremumm must be greater than minimum');
-    }
-  }
-
   private randomPlayer(): Player {
-    const randomInt = this.getRandomInt(0, 2);
+    const randomInt = this.strategyService.getRandomInt(0, 2);
     if (randomInt === 0) {
       return Player.COMPUTER;
     } else {
@@ -61,7 +54,7 @@ export class MatchService {
     };
     const { piles } = matchOptionsDto;
     for (let i = 0; i < piles; i++) {
-      turn[`integer_${i + 1}`] = this.getRandomInt(1, supremum);
+      turn[`integer_${i + 1}`] = this.strategyService.getRandomInt(1, supremum);
     }
     return await this.turnService.add(turn);
   }
