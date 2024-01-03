@@ -11,6 +11,7 @@ import { StrategyService } from 'src/strategy/strategy.service';
 import { StrategySelected } from './dto/strategy-selected.dto';
 import { ComputerStrategy } from './enums/computer-strategy.enums';
 import { MatchService } from 'src/match/match.service';
+import { Player } from 'src/match/enums/player.enums';
 
 @Injectable()
 export class TurnService {
@@ -43,7 +44,7 @@ export class TurnService {
     newTurn['turn_order'] = lastTurnPosted.turn_order + 1;
     for (let i = 1; i < 4; i++) {
       if (i === turnPlayed.pile) {
-        this.valuesVerification(
+        this.newValueVerification(
           lastTurnPosted[`integer_${i}`],
           turnPlayed.value,
         );
@@ -95,7 +96,7 @@ export class TurnService {
     return turnPlayed;
   }
 
-  private valuesVerification(
+  private newValueVerification(
     currentIntegerSelectedPile: number,
     value: number,
   ): boolean {
@@ -111,6 +112,21 @@ export class TurnService {
   private lastTurnVerification(turn: Partial<Turn>): boolean {
     if (turn.integer_1 === 0 && turn.integer_2 === 0 && turn.integer_3 === 0) {
       return true;
+    }
+  }
+
+  public async userTurnVerification(lastTurnPosted: Turn): Promise<Player> {
+    const { first_player } = await this.matchService.findOne({
+      match_id: lastTurnPosted.match_id,
+    });
+    const turnsPlayed = lastTurnPosted.turn_order;
+    if (turnsPlayed % 2 === 0) {
+      return first_player;
+    } else {
+      const roles = new Set([Player.COMPUTER, Player.USER]);
+      roles.delete(first_player);
+      const iterator = roles.values();
+      return iterator.next().value;
     }
   }
 }
