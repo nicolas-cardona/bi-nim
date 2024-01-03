@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { MatchModel } from './match.model';
 import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
@@ -58,6 +58,19 @@ export class MatchService {
       turn[`integer_${i + 1}`] = this.strategyService.getRandomInt(1, supremum);
     }
     return await this.turnService.add(turn);
+  }
+
+  public async matchUnfinishedVerification(
+    match: Partial<Match>,
+  ): Promise<boolean> {
+    const matchFounded = await this.findOne({
+      match_id: match.match_id,
+    });
+    if (matchFounded.match_finished === true) {
+      throw new BadRequestException('this game has finished');
+    } else {
+      return true;
+    }
   }
 
   public async endGame(match: Partial<Match>): Promise<Match> {
