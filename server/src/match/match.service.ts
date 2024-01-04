@@ -1,9 +1,13 @@
-import { BadRequestException, Inject, Injectable, forwardRef } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { MatchModel } from './match.model';
 import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
 import { Player } from './enums/player.enums';
-import { Turn } from 'src/turn/entities/turn.entity';
 import { TurnService } from 'src/turn/turn.service';
 import { StrategyService } from 'src/strategy/strategy.service';
 
@@ -32,7 +36,7 @@ export class MatchService {
       setupMatch['first_player'] = matchOptionsDto.firstPlayer;
     }
     const match = await this.matchModel.add(setupMatch);
-    await this.setupInitialTurn(match, matchOptionsDto, supremum);
+    await this.turnService.setupInitialTurn(match, matchOptionsDto, supremum);
     return await this.matchModel.findOne(match);
   }
 
@@ -43,21 +47,6 @@ export class MatchService {
     } else {
       return Player.USER;
     }
-  }
-
-  private async setupInitialTurn(
-    match: Partial<Match>,
-    matchOptionsDto: MatchOptionsDto,
-    supremum: number,
-  ): Promise<Turn> {
-    const turn = {
-      match_id: match.match_id,
-    };
-    const { piles } = matchOptionsDto;
-    for (let i = 0; i < piles; i++) {
-      turn[`integer_${i + 1}`] = this.strategyService.getRandomInt(1, supremum);
-    }
-    return await this.turnService.add(turn);
   }
 
   public async matchUnfinishedVerification(

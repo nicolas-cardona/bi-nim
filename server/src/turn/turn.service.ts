@@ -12,6 +12,8 @@ import { StrategySelected } from './dto/strategy-selected.dto';
 import { ComputerStrategy } from './enums/computer-strategy.enums';
 import { MatchService } from 'src/match/match.service';
 import { Player } from 'src/match/enums/player.enums';
+import { Match } from 'src/match/entities/match.entity';
+import { MatchOptionsDto } from 'src/match/dto/match-options.dto';
 
 @Injectable()
 export class TurnService {
@@ -32,6 +34,21 @@ export class TurnService {
 
   public async add(turn: Partial<Turn>): Promise<Turn> {
     return await this.turnModel.add(turn);
+  }
+
+  public async setupInitialTurn(
+    match: Partial<Match>,
+    matchOptionsDto: MatchOptionsDto,
+    supremum: number,
+  ): Promise<Turn> {
+    const turn = {
+      match_id: match.match_id,
+    };
+    const { piles } = matchOptionsDto;
+    for (let i = 0; i < piles; i++) {
+      turn[`integer_${i + 1}`] = this.strategyService.getRandomInt(1, supremum);
+    }
+    return await this.add(turn);
   }
 
   public async createTurn(
