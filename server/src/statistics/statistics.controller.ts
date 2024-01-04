@@ -6,7 +6,7 @@ import { Statistic } from './entities/statistic.entity';
 export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {}
 
-  @Get('')
+  @Get('/')
   async get(): Promise<Statistic> {
     return await this.statisticsService.get();
   }
