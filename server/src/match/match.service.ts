@@ -20,6 +20,10 @@ export class MatchService {
     private readonly strategyService: StrategyService,
   ) {}
 
+  public async find(match: Partial<Match>): Promise<Match[]> {
+    return await this.matchModel.find(match);
+  }
+
   public async findOne(match: Partial<Match>): Promise<Match> {
     return await this.matchModel.findOne(match);
   }
