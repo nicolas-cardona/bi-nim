@@ -3,7 +3,6 @@ import {
   IsUUID,
   IsString,
   IsDateString,
-  // IsInt,
   IsBoolean,
 } from 'class-validator';
 import { UUID } from 'crypto';
@@ -13,18 +12,6 @@ export class Match {
   @IsNotEmpty()
   @IsUUID()
   match_id: UUID;
-
-  // @IsNotEmpty()
-  // @IsInt()
-  // integer_1: number;
-
-  // @IsNotEmpty()
-  // @IsInt()
-  // integer_2: number;
-
-  // @IsNotEmpty()
-  // @IsInt()
-  // integer_3: number;
 
   @IsNotEmpty()
   @IsString()
@@ -40,11 +27,4 @@ export class Match {
   @IsNotEmpty()
   @IsDateString()
   created_at: Date;
-
-  @IsNotEmpty()
-  @IsDateString()
-  updated_at: Date;
-
-  @IsDateString()
-  deleted_at: Date;
 }
