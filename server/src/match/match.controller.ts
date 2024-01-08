@@ -6,11 +6,11 @@ import { UUID } from 'crypto';
 
 const supremum = 20;
 
-@Controller('match')
+@Controller('matches')
 export class MatchController {
   constructor(private readonly matchService: MatchService) {}
 
-  @Post('new')
+  @Post('/')
   async newMatch(@Body() matchOptionsDto: MatchOptionsDto): Promise<Match> {
     return await this.matchService.add(matchOptionsDto, supremum);
   }
