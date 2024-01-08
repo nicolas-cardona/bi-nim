@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+} from '@nestjs/common';
 import { MatchService } from './match.service';
 import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
@@ -14,7 +21,7 @@ export class MatchController {
   }
 
   @Get(':matchId')
-  async getOne(@Param('matchId') matchId: UUID): Promise<Match> {
+  async getOne(@Param('matchId', ParseUUIDPipe) matchId: UUID): Promise<Match> {
     return await this.matchService.findOne({
       match_id: matchId,
     });
