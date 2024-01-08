@@ -82,7 +82,7 @@ export class TurnService {
   ): boolean {
     if (currentIntegerSelectedPile < value) {
       throw new BadRequestException(
-        'value must be lesser or equal than the integer corresponding to the pile number',
+        'value must be less or equal than the integer corresponding to the pile number',
       );
     } else {
       return true;
