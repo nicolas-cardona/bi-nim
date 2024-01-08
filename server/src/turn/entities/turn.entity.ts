@@ -31,11 +31,4 @@ export class Turn {
   @IsNotEmpty()
   @IsDateString()
   created_at: Date;
-
-  @IsNotEmpty()
-  @IsDateString()
-  updated_at: Date;
-
-  @IsDateString()
-  deleted_at: Date;
 }
