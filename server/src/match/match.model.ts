@@ -9,7 +9,6 @@ const selectKey = [
   'winner',
   'match_finished',
   'created_at',
-  'updated_at',
 ];
 @Injectable()
 export class MatchModel {
@@ -20,8 +19,7 @@ export class MatchModel {
   public async find(where: Partial<Match>): Promise<Match[]> {
     const matches = await this.database('nim.match')
       .select(selectKey)
-      .where(where)
-      .whereNull('deleted_at');
+      .where(where);
     return matches === undefined ? null : matches;
   }
 
@@ -29,7 +27,6 @@ export class MatchModel {
     const match = await this.database('nim.match')
       .select(selectKey)
       .where(where)
-      .whereNull('deleted_at')
       .first();
     return match === undefined ? null : match;
   }
@@ -47,7 +44,6 @@ export class MatchModel {
   ): Promise<Match> {
     const matchUpdated = await this.database('nim.match')
       .where(where)
-      .whereNull('deleted_at')
       .update(update)
       .returning(selectKey);
     return matchUpdated === undefined ? null : matchUpdated[0];

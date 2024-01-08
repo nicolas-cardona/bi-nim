@@ -11,7 +11,6 @@ const selectKey = [
   'integer_3',
   'turn_order',
   'created_at',
-  'updated_at',
 ];
 
 @Injectable()
@@ -25,7 +24,6 @@ export class TurnModel {
       .select(selectKey)
       .where(where)
       .orderBy('turn_order', 'desc')
-      .whereNull('deleted_at')
       .first();
     return turn === undefined ? null : turn;
   }
@@ -34,8 +32,7 @@ export class TurnModel {
     const turnsList = await this.database('nim.turn')
       .select(selectKey)
       .where(where)
-      .orderBy('turn_order', 'desc')
-      .whereNull('deleted_at');
+      .orderBy('turn_order', 'desc');
     return turnsList === undefined ? null : turnsList;
   }
 
