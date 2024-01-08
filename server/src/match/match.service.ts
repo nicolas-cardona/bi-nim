@@ -9,7 +9,6 @@ import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
 import { Player } from './enums/player.enums';
 import { TurnService } from 'src/turn/turn.service';
-import knex, { Knex } from 'knex';
 
 @Injectable()
 export class MatchService {
