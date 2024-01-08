@@ -7,9 +7,6 @@ import {
 import { TurnModel } from './turn.model';
 import { Turn } from './entities/turn.entity';
 import { TurnPlayed } from './dto/turn-played.dto';
-import { StrategyService } from 'src/strategy/strategy.service';
-import { StrategySelected } from './dto/strategy-selected.dto';
-import { ComputerStrategy } from './enums/computer-strategy.enums';
 import { MatchService } from 'src/match/match.service';
 import { Player } from 'src/match/enums/player.enums';
 import { Match } from 'src/match/entities/match.entity';
@@ -19,7 +16,6 @@ import { MatchOptionsDto } from 'src/match/dto/match-options.dto';
 export class TurnService {
   constructor(
     private readonly turnModel: TurnModel,
-    private readonly strategyService: StrategyService,
     @Inject(forwardRef(() => MatchService))
     private readonly matchService: MatchService,
   ) {}
@@ -46,7 +42,7 @@ export class TurnService {
     };
     const { piles } = matchOptionsDto;
     for (let i = 0; i < piles; i++) {
-      turn[`integer_${i + 1}`] = this.strategyService.getRandomInt(1, supremum);
+      turn[`integer_${i + 1}`] = this.matchService.getRandomInt(1, supremum);
     }
     return await this.add(turn);
   }
@@ -78,39 +74,6 @@ export class TurnService {
       });
     }
     return newTurn;
-  }
-
-  public async createComputerTurnPlayed(
-    lastTurnPosted: Turn,
-    strategySelected: StrategySelected,
-  ): Promise<TurnPlayed> {
-    const turnPlayed = {
-      pile: null,
-      value: null,
-    };
-    const integersArray = [
-      lastTurnPosted.integer_1,
-      lastTurnPosted.integer_2,
-      lastTurnPosted.integer_3,
-    ];
-
-    let selection = null;
-    if (strategySelected.strategy === ComputerStrategy.WINNING) {
-      selection = this.strategyService.selectionWinningStrategy(integersArray);
-    }
-
-    if (
-      selection === null ||
-      strategySelected.strategy === ComputerStrategy.RANDOM
-    ) {
-      selection = this.strategyService.selectionRandomStrategy(integersArray);
-    }
-
-    const comparing = (integer: number) => integer === selection[0];
-    turnPlayed.pile = integersArray.findIndex(comparing) + 1;
-    turnPlayed.value = selection[1];
-
-    return turnPlayed;
   }
 
   private newValueVerification(
@@ -147,14 +110,14 @@ export class TurnService {
     }
   }
 
-  public nextPlayerVerification(
-    currentPlayer: Player,
-    expectedPlayer: Player,
-  ): boolean {
-    if (currentPlayer !== expectedPlayer) {
-      throw new BadRequestException(`next player should be ${expectedPlayer}`);
-    } else {
-      return true;
-    }
-  }
+  // public nextPlayerVerification(
+  //   currentPlayer: Player,
+  //   expectedPlayer: Player,
+  // ): boolean {
+  //   if (currentPlayer !== expectedPlayer) {
+  //     throw new BadRequestException(`next player should be ${expectedPlayer}`);
+  //   } else {
+  //     return true;
+  //   }
+  // }
 }

@@ -9,7 +9,6 @@ import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
 import { Player } from './enums/player.enums';
 import { TurnService } from 'src/turn/turn.service';
-import { StrategyService } from 'src/strategy/strategy.service';
 
 @Injectable()
 export class MatchService {
@@ -17,7 +16,6 @@ export class MatchService {
     private readonly matchModel: MatchModel,
     @Inject(forwardRef(() => TurnService))
     private readonly turnService: TurnService,
-    private readonly strategyService: StrategyService,
   ) {}
 
   public async find(match: Partial<Match>): Promise<Match[]> {
@@ -44,8 +42,16 @@ export class MatchService {
     return await this.matchModel.findOne(match);
   }
 
+  public getRandomInt(minimum: number, supremum: number) {
+    if (minimum <= supremum) {
+      return Math.floor(Math.random() * (supremum - minimum) + minimum);
+    } else {
+      throw new Error('supremumm must be greater or equal than minimum');
+    }
+  }
+
   private randomPlayer(): Player {
-    const randomInt = this.strategyService.getRandomInt(0, 2);
+    const randomInt = this.getRandomInt(0, 2);
     if (randomInt === 0) {
       return Player.COMPUTER;
     } else {
@@ -67,17 +73,17 @@ export class MatchService {
   }
 
   public async endGame(match: Partial<Match>): Promise<Match> {
-    const lastTurnPosted = await this.turnService.findLastOne({
-      match_id: match.match_id,
-    });
-    const winner = await this.turnService.nextPlayer(lastTurnPosted);
+    // const lastTurnPosted = await this.turnService.findLastOne({
+    //   match_id: match.match_id,
+    // });
+    // const winner = await this.turnService.nextPlayer(lastTurnPosted);
     return await this.matchModel.update(
       {
         match_id: match.match_id,
       },
       {
         match_finished: true,
-        winner: winner,
+        // winner: winner,
       },
     );
   }
