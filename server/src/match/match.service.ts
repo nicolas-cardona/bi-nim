@@ -9,6 +9,7 @@ import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
 import { Player } from './enums/player.enums';
 import { TurnService } from 'src/turn/turn.service';
+import knex, { Knex } from 'knex';
 
 @Injectable()
 export class MatchService {
@@ -71,17 +72,16 @@ export class MatchService {
   }
 
   public async endGame(match: Partial<Match>): Promise<Match> {
-    // const lastTurnPosted = await this.turnService.findLastOne({
-    //   match_id: match.match_id,
-    // });
-    // const winner = await this.turnService.nextPlayer(lastTurnPosted);
+    const lastTurnPosted = await this.turnService.findLastOne({
+      match_id: match.match_id,
+    });
+    const winner = await this.turnService.nextPlayer(lastTurnPosted);
     return await this.matchModel.update(
       {
         match_id: match.match_id,
       },
       {
-        match_finished: true,
-        // winner: winner,
+        winner: winner,
       },
     );
   }
