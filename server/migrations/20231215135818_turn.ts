@@ -13,10 +13,8 @@ export async function up(knex: Knex): Promise<void> {
       integer_2 INTEGER DEFAULT 0,
       integer_3 INTEGER DEFAULT 0,
       turn_order INTEGER DEFAULT 0,
-      created_at TIMESTAMPTZ(3) DEFAULT NOW(),
-      updated_at TIMESTAMPTZ(3) DEFAULT NOW(),
-      deleted_at TIMESTAMPTZ(3)
-    )
+      created_at TIMESTAMPTZ(3) DEFAULT NOW()
+    );
   `);
 
   // Trigger that updates automatically the column updated_at after updating a row
