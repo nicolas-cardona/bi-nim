@@ -5,7 +5,7 @@ import { UUID } from 'crypto';
 import { TurnPlayed } from './dto/turn-played.dto';
 import { MatchService } from 'src/match/match.service';
 
-@Controller('turn')
+@Controller('turns')
 export class TurnController {
   constructor(
     private readonly turnService: TurnService,
