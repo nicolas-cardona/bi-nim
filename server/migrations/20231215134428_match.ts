@@ -14,6 +14,15 @@ export async function up(knex: Knex): Promise<void> {
       created_at TIMESTAMPTZ(3) DEFAULT NOW()
     );
   `);
+
+  // Trigger that updates the column match_finished
+  await knex.schema.raw(`
+    CREATE TRIGGER set_match_finished_trigger
+      BEFORE UPDATE ON nim.match
+      FOR EACH ROW
+      WHEN (NEW.winner IS DISTINCT FROM OLD.winner)
+      EXECUTE PROCEDURE set_match_finished();
+  `);
 }
 
 export async function down(knex: Knex): Promise<void> {
