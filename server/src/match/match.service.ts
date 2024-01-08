@@ -26,10 +26,7 @@ export class MatchService {
     return await this.matchModel.findOne(match);
   }
 
-  public async add(
-    matchOptionsDto: MatchOptionsDto,
-    supremum: number,
-  ): Promise<Match> {
+  public async add(matchOptionsDto: MatchOptionsDto): Promise<Match> {
     const setupMatch = {};
     const { firstPlayer } = matchOptionsDto;
     if (firstPlayer === 'RANDOM') {
@@ -38,7 +35,8 @@ export class MatchService {
       setupMatch['first_player'] = matchOptionsDto.firstPlayer;
     }
     const match = await this.matchModel.add(setupMatch);
-    await this.turnService.setupInitialTurn(match, matchOptionsDto, supremum);
+    const maxPile = 20;
+    await this.turnService.setupInitialTurn(match, matchOptionsDto, maxPile);
     return await this.matchModel.findOne(match);
   }
 
