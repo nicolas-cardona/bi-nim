@@ -30,8 +30,6 @@ export class TurnController {
     const lastTurnPosted = await this.turnService.findLastOne({
       match_id: matchId,
     });
-    // const nextPlayer = await this.turnService.nextPlayer(lastTurnPosted);
-    // this.turnService.nextPlayerVerification(Player.USER, nextPlayer);
     const turn = await this.turnService.createTurn(turnPlayed, lastTurnPosted);
     return await this.turnService.add(turn);
   }
