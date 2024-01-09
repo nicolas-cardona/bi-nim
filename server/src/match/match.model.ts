@@ -58,6 +58,7 @@ export class MatchModel {
       .insert(newTurn)
       .returning(turnResponseColumns);
 
+    await trx.commit();
     return [matchAdded[0], turnAdded[0]];
   }
 
