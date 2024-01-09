@@ -1,10 +1,4 @@
-import {
-  IsNotEmpty,
-  IsUUID,
-  IsString,
-  IsDateString,
-  IsBoolean,
-} from 'class-validator';
+import { IsNotEmpty, IsUUID, IsString, IsDateString } from 'class-validator';
 import { UUID } from 'crypto';
 import { Player } from '../enums/player.enums';
 
@@ -20,9 +14,8 @@ export class Match {
   @IsString()
   winner: Player;
 
-  @IsNotEmpty()
-  @IsBoolean()
-  match_finished: boolean;
+  @IsDateString()
+  match_finished: Date;
 
   @IsNotEmpty()
   @IsDateString()
