@@ -70,7 +70,7 @@ export class MatchService {
     const matchFounded = await this.findOne({
       match_id: match.match_id,
     });
-    if (matchFounded.match_finished === true) {
+    if (matchFounded.match_finished) {
       throw new BadRequestException('this game has finished');
     } else {
       return true;
