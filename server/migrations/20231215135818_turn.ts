@@ -16,14 +16,6 @@ export async function up(knex: Knex): Promise<void> {
       created_at TIMESTAMPTZ(3) DEFAULT NOW()
     );
   `);
-
-  // Trigger that updates automatically the column updated_at after updating a row
-  await knex.schema.raw(`
-    CREATE TRIGGER turn_set_updated_at
-      BEFORE UPDATE ON nim.turn
-      FOR EACH ROW
-      EXECUTE PROCEDURE set_updated_at();
-  `);
 }
 
 export async function down(knex: Knex): Promise<void> {
