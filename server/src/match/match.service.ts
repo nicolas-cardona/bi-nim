@@ -9,6 +9,7 @@ import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
 import { Player } from './enums/player.enums';
 import { TurnService } from 'src/turn/turn.service';
+import { Turn } from 'src/turn/entities/turn.entity';
 
 @Injectable()
 export class MatchService {
@@ -26,18 +27,24 @@ export class MatchService {
     return await this.matchModel.findOne(match);
   }
 
-  public async add(matchOptionsDto: MatchOptionsDto): Promise<Match> {
+  public async addWithTurnTransaction(
+    matchOptionsDto: MatchOptionsDto,
+  ): Promise<[Match, Turn]> {
     const setupMatch = {};
-    const { firstPlayer } = matchOptionsDto;
+    const setupTurn = {};
+    const { firstPlayer, piles } = matchOptionsDto;
+    const maxPile = 20;
+
+    for (let i = 0; i < piles; i++) {
+      setupTurn[`integer_${i + 1}`] = this.getRandomInt(1, maxPile);
+    }
+
     if (firstPlayer === 'RANDOM') {
       setupMatch['first_player'] = this.randomPlayer();
     } else {
       setupMatch['first_player'] = matchOptionsDto.firstPlayer;
     }
-    const match = await this.matchModel.add(setupMatch);
-    const maxPile = 20;
-    await this.turnService.setupInitialTurn(match, matchOptionsDto, maxPile);
-    return await this.matchModel.findOne(match);
+    return await this.matchModel.addWithTurnTransaction(setupMatch, setupTurn);
   }
 
   public getRandomInt(minimum: number, supremum: number) {
