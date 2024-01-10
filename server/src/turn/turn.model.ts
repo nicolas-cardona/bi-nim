@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import * as KnexConfig from '../../knexfile';
 import { Turn } from './entities/turn.entity';
 
-const selectKey = [
+const responseColumns = [
   'turn_id',
   'match_id',
   'integer_1',
@@ -11,7 +11,6 @@ const selectKey = [
   'integer_3',
   'turn_order',
   'created_at',
-  'updated_at',
 ];
 
 @Injectable()
@@ -22,27 +21,25 @@ export class TurnModel {
 
   public async findLastOne(where: Partial<Turn>): Promise<Turn> {
     const turn = await this.database('nim.turn')
-      .select(selectKey)
+      .select(responseColumns)
       .where(where)
       .orderBy('turn_order', 'desc')
-      .whereNull('deleted_at')
       .first();
     return turn === undefined ? null : turn;
   }
 
   public async find(where: Partial<Turn>): Promise<Turn[]> {
     const turnsList = await this.database('nim.turn')
-      .select(selectKey)
+      .select(responseColumns)
       .where(where)
-      .orderBy('turn_order', 'desc')
-      .whereNull('deleted_at');
+      .orderBy('turn_order', 'desc');
     return turnsList === undefined ? null : turnsList;
   }
 
   public async add(newTurn: Partial<Turn>): Promise<Turn> {
     const turnAdded = await this.database('nim.turn')
       .insert(newTurn)
-      .returning(selectKey);
+      .returning(responseColumns);
     return turnAdded[0];
   }
 }

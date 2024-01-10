@@ -1,44 +1,62 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { MatchModel } from './match.model';
 import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
 import { Player } from './enums/player.enums';
-import { Turn } from 'src/turn/entities/turn.entity';
-import { TurnService } from 'src/turn/turn.service';
+import { TurnService } from '../turn/turn.service';
+import { MatchAndTurnDto } from './dto/match-and-turn.dto';
 
 @Injectable()
 export class MatchService {
   constructor(
     private readonly matchModel: MatchModel,
+    @Inject(forwardRef(() => TurnService))
     private readonly turnService: TurnService,
   ) {}
+
+  public async find(match: Partial<Match>): Promise<Match[]> {
+    return await this.matchModel.find(match);
+  }
 
   public async findOne(match: Partial<Match>): Promise<Match> {
     return await this.matchModel.findOne(match);
   }
 
-  public async add(
+  public async addWithTurnTransaction(
     matchOptionsDto: MatchOptionsDto,
-    supremum: number,
-  ): Promise<Match> {
+  ): Promise<MatchAndTurnDto> {
     const setupMatch = {};
-    const { firstPlayer } = matchOptionsDto;
+    const setupTurn = {};
+    const { firstPlayer, piles } = matchOptionsDto;
+    const maxPile = 20;
+
+    for (let i = 0; i < piles; i++) {
+      setupTurn[`integer_${i + 1}`] = this.getRandomInt(1, maxPile);
+    }
+
     if (firstPlayer === 'RANDOM') {
       setupMatch['first_player'] = this.randomPlayer();
     } else {
       setupMatch['first_player'] = matchOptionsDto.firstPlayer;
     }
-    const match = await this.matchModel.add(setupMatch);
-    await this.setupInitialTurn(match, matchOptionsDto, supremum);
-    return await this.matchModel.findOne(match);
+    return await this.matchModel.addWithTurnTransaction(setupMatch, setupTurn);
   }
 
-  private getRandomInt(supremum: number) {
-    return Math.floor(Math.random() * supremum);
+  public getRandomInt(minimum: number, supremum: number) {
+    if (minimum <= supremum) {
+      return Math.floor(Math.random() * (supremum - minimum) + minimum);
+    } else {
+      throw new Error('supremumm must be greater or equal than minimum');
+    }
   }
 
   private randomPlayer(): Player {
-    const randomInt = this.getRandomInt(2);
+    const randomInt = this.getRandomInt(0, 2);
     if (randomInt === 0) {
       return Player.COMPUTER;
     } else {
@@ -46,18 +64,31 @@ export class MatchService {
     }
   }
 
-  public async setupInitialTurn(
+  public async matchUnfinishedVerification(
     match: Partial<Match>,
-    matchOptionsDto: MatchOptionsDto,
-    supremum: number,
-  ): Promise<Turn> {
-    const turn = {
+  ): Promise<boolean> {
+    const matchFounded = await this.findOne({
       match_id: match.match_id,
-    };
-    const { piles } = matchOptionsDto;
-    for (let i = 0; i < piles; i++) {
-      turn[`integer_${i + 1}`] = this.getRandomInt(supremum);
+    });
+    if (matchFounded.match_finished) {
+      throw new BadRequestException('this game has finished');
+    } else {
+      return true;
     }
-    return await this.turnService.add(turn);
+  }
+
+  public async endGame(match: Partial<Match>): Promise<Match> {
+    const lastTurnPosted = await this.turnService.findLastOne({
+      match_id: match.match_id,
+    });
+    const winner = await this.turnService.nextPlayer(lastTurnPosted);
+    return await this.matchModel.update(
+      {
+        match_id: match.match_id,
+      },
+      {
+        winner: winner,
+      },
+    );
   }
 }

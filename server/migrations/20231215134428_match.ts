@@ -10,19 +10,17 @@ export async function up(knex: Knex): Promise<void> {
       match_id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       first_player player NOT NULL,
       winner player,
-      match_finished BOOLEAN DEFAULT false,
-      created_at TIMESTAMPTZ(3) DEFAULT NOW(),
-      updated_at TIMESTAMPTZ(3) DEFAULT NOW(),
-      deleted_at TIMESTAMPTZ(3)
+      match_finished TIMESTAMPTZ(3),
+      created_at TIMESTAMPTZ(3) DEFAULT NOW()
     );
   `);
 
-  // Trigger that updates automatically the column updated_at after updating a row
+  // Trigger that updates the column match_finished
   await knex.schema.raw(`
-    CREATE TRIGGER match_set_updated_at
+    CREATE TRIGGER set_match_finished_trigger
       BEFORE UPDATE ON nim.match
       FOR EACH ROW
-      EXECUTE PROCEDURE set_updated_at();
+      EXECUTE PROCEDURE set_match_finished();
   `);
 }
 
