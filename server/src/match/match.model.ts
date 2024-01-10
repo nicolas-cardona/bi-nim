@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import * as KnexConfig from '../../knexfile';
 import { Match } from './entities/match.entity';
 import { Turn } from '../turn/entities/turn.entity';
+import { MatchAndTurnDto } from './dto/match-and-turn.dto';
 
 const responseColumns = [
   'match_id',
@@ -45,7 +46,7 @@ export class MatchModel {
   public async addWithTurnTransaction(
     newMatch: Partial<Match>,
     newTurn: Partial<Turn>,
-  ): Promise<[Match, Turn]> {
+  ): Promise<MatchAndTurnDto> {
     const trxProvider = this.database.transactionProvider();
     const trx = await trxProvider();
 
@@ -59,7 +60,10 @@ export class MatchModel {
       .returning(turnResponseColumns);
 
     await trx.commit();
-    return [matchAdded[0], turnAdded[0]];
+    return {
+      match: matchAdded[0],
+      turn: turnAdded[0],
+    };
   }
 
   public async update(

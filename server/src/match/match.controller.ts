@@ -10,7 +10,7 @@ import { MatchService } from './match.service';
 import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
 import { UUID } from 'crypto';
-import { Turn } from '../turn/entities/turn.entity';
+import { MatchAndTurnDto } from './dto/match-and-turn.dto';
 
 @Controller('matches')
 export class MatchController {
@@ -19,7 +19,7 @@ export class MatchController {
   @Post('/')
   async newMatch(
     @Body() matchOptionsDto: MatchOptionsDto,
-  ): Promise<[Match, Turn]> {
+  ): Promise<MatchAndTurnDto> {
     return await this.matchService.addWithTurnTransaction(matchOptionsDto);
   }
 
