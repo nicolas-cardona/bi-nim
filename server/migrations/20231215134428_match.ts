@@ -20,7 +20,6 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TRIGGER set_match_finished_trigger
       BEFORE UPDATE ON nim.match
       FOR EACH ROW
-      WHEN (NEW.winner IS DISTINCT FROM OLD.winner)
       EXECUTE PROCEDURE set_match_finished();
   `);
 }
