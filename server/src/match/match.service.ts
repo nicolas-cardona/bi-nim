@@ -8,8 +8,8 @@ import { MatchModel } from './match.model';
 import { Match } from './entities/match.entity';
 import { MatchOptionsDto } from './dto/match-options.dto';
 import { Player } from './enums/player.enums';
-import { TurnService } from 'src/turn/turn.service';
-import { Turn } from 'src/turn/entities/turn.entity';
+import { TurnService } from '../turn/turn.service';
+import { Turn } from '../turn/entities/turn.entity';
 
 @Injectable()
 export class MatchService {

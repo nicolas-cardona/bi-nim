@@ -7,8 +7,8 @@ import {
 import { TurnModel } from './turn.model';
 import { Turn } from './entities/turn.entity';
 import { TurnPlayed } from './dto/turn-played.dto';
-import { MatchService } from 'src/match/match.service';
-import { Player } from 'src/match/enums/player.enums';
+import { MatchService } from '../match/match.service';
+import { Player } from '../match/enums/player.enums';
 
 @Injectable()
 export class TurnService {

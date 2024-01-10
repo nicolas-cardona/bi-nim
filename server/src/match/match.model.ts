@@ -2,7 +2,7 @@ import knex from 'knex';
 import { Injectable } from '@nestjs/common';
 import * as KnexConfig from '../../knexfile';
 import { Match } from './entities/match.entity';
-import { Turn } from 'src/turn/entities/turn.entity';
+import { Turn } from '../turn/entities/turn.entity';
 
 const responseColumns = [
   'match_id',
