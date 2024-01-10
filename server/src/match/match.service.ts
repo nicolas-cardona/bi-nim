@@ -10,6 +10,7 @@ import { MatchOptionsDto } from './dto/match-options.dto';
 import { Player } from './enums/player.enums';
 import { TurnService } from '../turn/turn.service';
 import { MatchAndTurnDto } from './dto/match-and-turn.dto';
+import { StrategyService } from '../strategy/strategy.service';
 
 @Injectable()
 export class MatchService {
@@ -17,6 +18,7 @@ export class MatchService {
     private readonly matchModel: MatchModel,
     @Inject(forwardRef(() => TurnService))
     private readonly turnService: TurnService,
+    private readonly strategyService: StrategyService,
   ) {}
 
   public async find(match: Partial<Match>): Promise<Match[]> {
@@ -36,7 +38,10 @@ export class MatchService {
     const maxPile = 20;
 
     for (let i = 0; i < piles; i++) {
-      setupTurn[`integer_${i + 1}`] = this.getRandomInt(1, maxPile);
+      setupTurn[`integer_${i + 1}`] = this.strategyService.getRandomInt(
+        1,
+        maxPile,
+      );
     }
 
     if (firstPlayer === 'RANDOM') {
@@ -47,16 +52,8 @@ export class MatchService {
     return await this.matchModel.addWithTurnTransaction(setupMatch, setupTurn);
   }
 
-  public getRandomInt(minimum: number, supremum: number) {
-    if (minimum <= supremum) {
-      return Math.floor(Math.random() * (supremum - minimum) + minimum);
-    } else {
-      throw new Error('supremumm must be greater or equal than minimum');
-    }
-  }
-
   private randomPlayer(): Player {
-    const randomInt = this.getRandomInt(0, 2);
+    const randomInt = this.strategyService.getRandomInt(0, 2);
     if (randomInt === 0) {
       return Player.COMPUTER;
     } else {
