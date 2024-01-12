@@ -9,6 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE IF NOT EXISTS nim.turn(
       turn_id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       match_id UUID REFERENCES nim.match(match_id) NOT NULL,
+      next_player player NOT NULL,
       integer_1 INTEGER DEFAULT 0,
       integer_2 INTEGER DEFAULT 0,
       integer_3 INTEGER DEFAULT 0,
