@@ -45,9 +45,9 @@ export class MatchService {
     }
 
     if (firstPlayer === 'RANDOM') {
-      setupMatch['first_player'] = this.randomPlayer();
+      setupTurn['next_player'] = this.randomPlayer();
     } else {
-      setupMatch['first_player'] = matchOptionsDto.firstPlayer;
+      setupTurn['next_player'] = matchOptionsDto.firstPlayer;
     }
     return await this.matchModel.addWithTurnTransaction(setupMatch, setupTurn);
   }
