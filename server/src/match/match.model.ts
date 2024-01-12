@@ -5,13 +5,7 @@ import { Match } from './entities/match.entity';
 import { Turn } from '../turn/entities/turn.entity';
 import { MatchAndTurnDto } from './dto/match-and-turn.dto';
 
-const responseColumns = [
-  'match_id',
-  'first_player',
-  'winner',
-  'match_finished',
-  'created_at',
-];
+const responseColumns = ['match_id', 'winner', 'match_finished', 'created_at'];
 
 const turnResponseColumns = [
   'turn_id',
