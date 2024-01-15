@@ -3,9 +3,10 @@ import { TurnService } from './turn.service';
 import { TurnController } from './turn.controller';
 import { TurnModel } from './turn.model';
 import { MatchModule } from '../match/match.module';
+import { StrategyModule } from '../strategy/strategy.module';
 
 @Module({
-  imports: [forwardRef(() => MatchModule)],
+  imports: [forwardRef(() => MatchModule), StrategyModule],
   controllers: [TurnController],
   providers: [TurnService, TurnModel],
   exports: [TurnService],

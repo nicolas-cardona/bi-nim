@@ -9,6 +9,9 @@ import { Turn } from './entities/turn.entity';
 import { TurnPlayed } from './dto/turn-played.dto';
 import { MatchService } from '../match/match.service';
 import { Player } from '../match/enums/player.enums';
+import { StrategyService } from '../strategy/strategy.service';
+import { StrategySelected } from './dto/strategy-selected.dto';
+import { ComputerStrategy } from './enums/computer-strategy.enums';
 
 @Injectable()
 export class TurnService {
@@ -16,6 +19,7 @@ export class TurnService {
     private readonly turnModel: TurnModel,
     @Inject(forwardRef(() => MatchService))
     private readonly matchService: MatchService,
+    private readonly strategyService: StrategyService,
   ) {}
 
   public async find(turn: Partial<Turn>): Promise<Turn[]> {
@@ -51,21 +55,57 @@ export class TurnService {
       }
     }
 
+    newTurn['next_player'] = this.nextPlayer(lastTurnPosted.next_player);
+
     if (this.lastTurnVerification(newTurn)) {
-      await this.matchService.endGame({
-        match_id: newTurn.match_id,
-      });
+      await this.matchService.endGame(lastTurnPosted);
     }
     return newTurn;
+  }
+
+  public async createComputerTurnPlayed(
+    lastTurnPosted: Turn,
+    strategySelected: StrategySelected,
+  ): Promise<TurnPlayed> {
+    const turnPlayed = {
+      pile: null,
+      value: null,
+    };
+    const integersArray = [
+      lastTurnPosted.integer_1,
+      lastTurnPosted.integer_2,
+      lastTurnPosted.integer_3,
+    ];
+
+    let selection = null;
+    if (strategySelected.strategy === ComputerStrategy.WINNING) {
+      selection = this.strategyService.selectionWinningStrategy(integersArray);
+    }
+
+    if (
+      selection === null ||
+      strategySelected.strategy === ComputerStrategy.RANDOM
+    ) {
+      selection = this.strategyService.selectionRandomStrategy(integersArray);
+    }
+
+    const comparing = (integer: number) => integer === selection[0];
+    turnPlayed.pile = integersArray.findIndex(comparing) + 1;
+    turnPlayed.value = selection[1];
+
+    return turnPlayed;
   }
 
   private newValueVerification(
     currentIntegerSelectedPile: number,
     value: number,
   ): boolean {
+    if (currentIntegerSelectedPile === 0) {
+      throw new BadRequestException('select a pile with at least one element');
+    }
     if (currentIntegerSelectedPile < value) {
       throw new BadRequestException(
-        'value must be less or equal than the integer corresponding to the pile number',
+        `the value for the selected pile must be less or equal than ${currentIntegerSelectedPile}`,
       );
     } else {
       return true;
@@ -78,18 +118,21 @@ export class TurnService {
     }
   }
 
-  public async nextPlayer(lastTurnPosted: Turn): Promise<Player> {
-    const { first_player } = await this.matchService.findOne({
-      match_id: lastTurnPosted.match_id,
-    });
-    const turnsPlayed = lastTurnPosted.turn_order;
-    if (turnsPlayed % 2 === 0) {
-      return first_player;
+  public nextPlayer(currentPlayer: Player): Player {
+    const roles = new Set([Player.COMPUTER, Player.USER]);
+    roles.delete(currentPlayer);
+    const iterator = roles.values();
+    return iterator.next().value;
+  }
+
+  public nextPlayerVerification(
+    currentPlayer: Player,
+    expectedPlayer: Player,
+  ): boolean {
+    if (currentPlayer !== expectedPlayer) {
+      throw new BadRequestException(`next player should be ${expectedPlayer}`);
     } else {
-      const roles = new Set([Player.COMPUTER, Player.USER]);
-      roles.delete(first_player);
-      const iterator = roles.values();
-      return iterator.next().value;
+      return true;
     }
   }
 }

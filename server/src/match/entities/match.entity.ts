@@ -7,10 +7,6 @@ export class Match {
   @IsUUID()
   match_id: UUID;
 
-  @IsNotEmpty()
-  @IsString()
-  first_player: Player;
-
   @IsString()
   winner: Player;
 

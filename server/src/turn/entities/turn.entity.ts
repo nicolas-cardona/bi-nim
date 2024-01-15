@@ -1,5 +1,13 @@
-import { IsNotEmpty, IsUUID, IsDateString, IsInt, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsUUID,
+  IsDateString,
+  IsInt,
+  Min,
+  IsString,
+} from 'class-validator';
 import { UUID } from 'crypto';
+import { Player } from '../../match/enums/player.enums';
 export class Turn {
   @IsNotEmpty()
   @IsUUID()
@@ -8,6 +16,10 @@ export class Turn {
   @IsNotEmpty()
   @IsUUID()
   match_id: UUID;
+
+  @IsNotEmpty()
+  @IsString()
+  next_player: Player;
 
   @IsNotEmpty()
   @IsInt()

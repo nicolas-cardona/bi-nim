@@ -10,6 +10,8 @@ import { MatchOptionsDto } from './dto/match-options.dto';
 import { Player } from './enums/player.enums';
 import { TurnService } from '../turn/turn.service';
 import { MatchAndTurnDto } from './dto/match-and-turn.dto';
+import { StrategyService } from '../strategy/strategy.service';
+import { Turn } from '../turn/entities/turn.entity';
 
 @Injectable()
 export class MatchService {
@@ -17,6 +19,7 @@ export class MatchService {
     private readonly matchModel: MatchModel,
     @Inject(forwardRef(() => TurnService))
     private readonly turnService: TurnService,
+    private readonly strategyService: StrategyService,
   ) {}
 
   public async find(match: Partial<Match>): Promise<Match[]> {
@@ -36,27 +39,22 @@ export class MatchService {
     const maxPile = 20;
 
     for (let i = 0; i < piles; i++) {
-      setupTurn[`integer_${i + 1}`] = this.getRandomInt(1, maxPile);
+      setupTurn[`integer_${i + 1}`] = this.strategyService.getRandomInt(
+        1,
+        maxPile,
+      );
     }
 
     if (firstPlayer === 'RANDOM') {
-      setupMatch['first_player'] = this.randomPlayer();
+      setupTurn['next_player'] = this.randomPlayer();
     } else {
-      setupMatch['first_player'] = matchOptionsDto.firstPlayer;
+      setupTurn['next_player'] = matchOptionsDto.firstPlayer;
     }
     return await this.matchModel.addWithTurnTransaction(setupMatch, setupTurn);
   }
 
-  public getRandomInt(minimum: number, supremum: number) {
-    if (minimum <= supremum) {
-      return Math.floor(Math.random() * (supremum - minimum) + minimum);
-    } else {
-      throw new Error('supremumm must be greater or equal than minimum');
-    }
-  }
-
   private randomPlayer(): Player {
-    const randomInt = this.getRandomInt(0, 2);
+    const randomInt = this.strategyService.getRandomInt(0, 2);
     if (randomInt === 0) {
       return Player.COMPUTER;
     } else {
@@ -70,21 +68,18 @@ export class MatchService {
     const matchFounded = await this.findOne({
       match_id: match.match_id,
     });
-    if (matchFounded.match_finished) {
+    if (matchFounded.match_finished !== null) {
       throw new BadRequestException('this game has finished');
     } else {
       return true;
     }
   }
 
-  public async endGame(match: Partial<Match>): Promise<Match> {
-    const lastTurnPosted = await this.turnService.findLastOne({
-      match_id: match.match_id,
-    });
-    const winner = await this.turnService.nextPlayer(lastTurnPosted);
+  public async endGame(lastTurnPosted: Turn): Promise<Match> {
+    const winner = lastTurnPosted.next_player;
     return await this.matchModel.update(
       {
-        match_id: match.match_id,
+        match_id: lastTurnPosted.match_id,
       },
       {
         winner: winner,

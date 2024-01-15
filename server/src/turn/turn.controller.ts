@@ -11,6 +11,8 @@ import { Turn } from './entities/turn.entity';
 import { UUID } from 'crypto';
 import { TurnPlayed } from './dto/turn-played.dto';
 import { MatchService } from '../match/match.service';
+import { StrategySelected } from './dto/strategy-selected.dto';
+import { Player } from '../match/enums/player.enums';
 
 @Controller('turns')
 export class TurnController {
@@ -30,6 +32,29 @@ export class TurnController {
     const lastTurnPosted = await this.turnService.findLastOne({
       match_id: matchId,
     });
+    const nextPlayer = lastTurnPosted.next_player;
+    this.turnService.nextPlayerVerification(Player.USER, nextPlayer);
+    const turn = await this.turnService.createTurn(turnPlayed, lastTurnPosted);
+    return await this.turnService.add(turn);
+  }
+
+  @Post(':matchId/computer')
+  async newComputerMatch(
+    @Param('matchId', ParseUUIDPipe) matchId: UUID,
+    @Body() strategySelected: StrategySelected,
+  ): Promise<Turn> {
+    await this.matchService.matchUnfinishedVerification({
+      match_id: matchId,
+    });
+    const lastTurnPosted = await this.turnService.findLastOne({
+      match_id: matchId,
+    });
+    const nextPlayer = lastTurnPosted.next_player;
+    this.turnService.nextPlayerVerification(Player.COMPUTER, nextPlayer);
+    const turnPlayed = await this.turnService.createComputerTurnPlayed(
+      lastTurnPosted,
+      strategySelected,
+    );
     const turn = await this.turnService.createTurn(turnPlayed, lastTurnPosted);
     return await this.turnService.add(turn);
   }
