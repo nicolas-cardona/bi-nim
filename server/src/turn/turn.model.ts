@@ -6,6 +6,7 @@ import { Turn } from './entities/turn.entity';
 const responseColumns = [
   'turn_id',
   'match_id',
+  'next_player',
   'integer_1',
   'integer_2',
   'integer_3',
