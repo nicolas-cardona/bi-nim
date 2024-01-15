@@ -55,6 +55,8 @@ export class TurnService {
       }
     }
 
+    newTurn['next_player'] = this.nextPlayer(lastTurnPosted.next_player);
+
     if (this.lastTurnVerification(newTurn)) {
       await this.matchService.endGame({
         match_id: newTurn.match_id,
@@ -100,9 +102,12 @@ export class TurnService {
     currentIntegerSelectedPile: number,
     value: number,
   ): boolean {
+    if (currentIntegerSelectedPile === 0) {
+      throw new BadRequestException('select a pile with at least one element');
+    }
     if (currentIntegerSelectedPile < value) {
       throw new BadRequestException(
-        'value must be less or equal than the integer corresponding to the pile number',
+        `the value for the selected pile must be less or equal than ${currentIntegerSelectedPile}`,
       );
     } else {
       return true;
@@ -115,19 +120,11 @@ export class TurnService {
     }
   }
 
-  public async nextPlayer(lastTurnPosted: Turn): Promise<Player> {
-    const { first_player } = await this.matchService.findOne({
-      match_id: lastTurnPosted.match_id,
-    });
-    const turnsPlayed = lastTurnPosted.turn_order;
-    if (turnsPlayed % 2 === 0) {
-      return first_player;
-    } else {
-      const roles = new Set([Player.COMPUTER, Player.USER]);
-      roles.delete(first_player);
-      const iterator = roles.values();
-      return iterator.next().value;
-    }
+  public nextPlayer(currentPlayer: Player): Player {
+    const roles = new Set([Player.COMPUTER, Player.USER]);
+    roles.delete(currentPlayer);
+    const iterator = roles.values();
+    return iterator.next().value;
   }
 
   public nextPlayerVerification(
