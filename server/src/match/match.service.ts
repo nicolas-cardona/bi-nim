@@ -67,7 +67,7 @@ export class MatchService {
     const matchFounded = await this.findOne({
       match_id: match.match_id,
     });
-    if (matchFounded.match_finished) {
+    if (matchFounded.match_finished !== null) {
       throw new BadRequestException('this game has finished');
     } else {
       return true;
@@ -78,7 +78,7 @@ export class MatchService {
     const lastTurnPosted = await this.turnService.findLastOne({
       match_id: match.match_id,
     });
-    const winner = await this.turnService.nextPlayer(lastTurnPosted);
+    const winner = lastTurnPosted.next_player;
     return await this.matchModel.update(
       {
         match_id: match.match_id,
