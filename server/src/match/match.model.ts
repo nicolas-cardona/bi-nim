@@ -10,6 +10,7 @@ const responseColumns = ['match_id', 'winner', 'match_finished', 'created_at'];
 const turnResponseColumns = [
   'turn_id',
   'match_id',
+  'next_player',
   'integer_1',
   'integer_2',
   'integer_3',
