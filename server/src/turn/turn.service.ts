@@ -58,9 +58,7 @@ export class TurnService {
     newTurn['next_player'] = this.nextPlayer(lastTurnPosted.next_player);
 
     if (this.lastTurnVerification(newTurn)) {
-      await this.matchService.endGame({
-        match_id: newTurn.match_id,
-      });
+      await this.matchService.endGame(lastTurnPosted);
     }
     return newTurn;
   }

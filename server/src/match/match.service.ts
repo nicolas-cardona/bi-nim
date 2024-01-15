@@ -11,6 +11,7 @@ import { Player } from './enums/player.enums';
 import { TurnService } from '../turn/turn.service';
 import { MatchAndTurnDto } from './dto/match-and-turn.dto';
 import { StrategyService } from '../strategy/strategy.service';
+import { Turn } from 'src/turn/entities/turn.entity';
 
 @Injectable()
 export class MatchService {
@@ -74,14 +75,11 @@ export class MatchService {
     }
   }
 
-  public async endGame(match: Partial<Match>): Promise<Match> {
-    const lastTurnPosted = await this.turnService.findLastOne({
-      match_id: match.match_id,
-    });
+  public async endGame(lastTurnPosted: Turn): Promise<Match> {
     const winner = lastTurnPosted.next_player;
     return await this.matchModel.update(
       {
-        match_id: match.match_id,
+        match_id: lastTurnPosted.match_id,
       },
       {
         winner: winner,
