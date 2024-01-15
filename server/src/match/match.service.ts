@@ -11,7 +11,7 @@ import { Player } from './enums/player.enums';
 import { TurnService } from '../turn/turn.service';
 import { MatchAndTurnDto } from './dto/match-and-turn.dto';
 import { StrategyService } from '../strategy/strategy.service';
-import { Turn } from 'src/turn/entities/turn.entity';
+import { Turn } from '../turn/entities/turn.entity';
 
 @Injectable()
 export class MatchService {
