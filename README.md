@@ -1,3 +1,3 @@
 # BINIM
 
-This is a project for a web app of a nim game https://github.com/nicolas-cardona/bi-nim.git
+This is a project for a web app of a nim game https://en.wikipedia.org/wiki/Nim
