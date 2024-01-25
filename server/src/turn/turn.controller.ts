@@ -22,7 +22,7 @@ export class TurnController {
   ) {}
 
   @Post(':matchId/user')
-  async newUserMatch(
+  async newUserTurn(
     @Param('matchId', ParseUUIDPipe) matchId: UUID,
     @Body() turnPlayed: TurnPlayed,
   ): Promise<Turn> {
@@ -39,7 +39,7 @@ export class TurnController {
   }
 
   @Post(':matchId/computer')
-  async newComputerMatch(
+  async newComputerTurn(
     @Param('matchId', ParseUUIDPipe) matchId: UUID,
     @Body() strategySelected: StrategySelected,
   ): Promise<Turn> {
@@ -60,10 +60,17 @@ export class TurnController {
   }
 
   @Get(':matchId')
-  async getOne(
-    @Param('matchId', ParseUUIDPipe) matchId: UUID,
-  ): Promise<Turn[]> {
+  async get(@Param('matchId', ParseUUIDPipe) matchId: UUID): Promise<Turn[]> {
     return await this.turnService.find({
+      match_id: matchId,
+    });
+  }
+
+  @Get(':matchId/last')
+  async getLastOne(
+    @Param('matchId', ParseUUIDPipe) matchId: UUID,
+  ): Promise<Turn> {
+    return await this.turnService.findLastOne({
       match_id: matchId,
     });
   }
